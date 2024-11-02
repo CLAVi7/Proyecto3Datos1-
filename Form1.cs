@@ -2,43 +2,59 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 
+
 namespace Proyecto3Datos1_
 {
     public partial class Form1 : Form
     {
         private int[,] mapa;
-        private int tamaño = 20; // Tamaño reducido de la matriz
+        private int tamaño = 20; // Tamaño de la matriz
         private List<Point> aeropuertos = new List<Point>();
         private List<Point> portaviones = new List<Point>();
+        private Grafo grafo;
+        
+       
 
         public Form1()
         {
             InitializeComponent();
-
-            // Establece el tamaño del formulario para ver la matriz completa
-            this.ClientSize = new Size(620, 620); // Ajusta el tamaño del formulario
-
+            int distanciaMaxima = 10;
+            mapa = new int[tamaño, tamaño];
+            grafo = new Grafo(distanciaMaxima);
+           
+            this.ClientSize = new Size(1020, 620);
             InicializarMatriz();
             GenerarPuntosImportantes();
             DibujarMatriz();
+            
         }
 
         private void InicializarMatriz()
         {
             mapa = new int[tamaño, tamaño];
             Random random = new Random();
-            int tierraAncho = tamaño / 2; // Ancho de la zona de tierra
+            // Ajusta estos valores para cambiar el tamaño de la zona de tierra
+            int tierraInicioX = tamaño / 4 - 1;
+            int tierraFinX = 3 * tamaño / 4 + 1;
+            int tierraInicioY = tamaño / 4 - 1;
+            int tierraFinY = 3 * tamaño / 4 + 1;
 
-            // Generar una zona central de tierra con forma irregular
             for (int i = 0; i < tamaño; i++)
             {
                 for (int j = 0; j < tamaño; j++)
                 {
-                    // Generar tierra aleatoria en una forma irregular
-                    if (i >= tamaño / 4 && i <= 3 * tamaño / 4 && j >= tamaño / 4 && j <= 3 * tamaño / 4)
+                    // Generar una zona central de tierra con forma algo irregular
+                    if (i >= tierraInicioX && i <= tierraFinX && j >= tierraInicioY && j <= tierraFinY)
                     {
-                        // Usar ruido aleatorio para decidir si es tierra (1) o agua (0)
-                        mapa[i, j] = random.Next(0, 4) == 0 ? 0 : 1; // 1/4 de probabilidad de ser agua
+                        // Agregar aleatoriedad para que no sea un cuadrado perfecto
+                        if (random.Next(0, 6) > 0)  // 3 de cada 4 casillas serán tierra
+                        {
+                            mapa[i, j] = 1; // Tierra
+                        }
+                        else
+                        {
+                            mapa[i, j] = 0; // Agua ocasional para borde irregular
+                        }
                     }
                     else
                     {
@@ -50,14 +66,17 @@ namespace Proyecto3Datos1_
 
 
 
+
         private void GenerarPuntosImportantes()
         {
             Random random = new Random();
-            int numAeropuertos = 5; // Número de aeropuertos
-            int numPortaviones = 5; // Número de portaviones
-            int distanciaMinima = 6;
+            int numAeropuertos = 5;
+            int numPortaviones = 5;
+            int distanciaMinima = 6; // Distancia mínima entre puntos importantes
 
-            // Generar ubicaciones de aeropuertos (en tierra)
+            List<Point> puntosImportantes = new List<Point>(); // Lista para almacenar todos los puntos importantes
+
+            // Generar ubicaciones de aeropuertos en tierra
             for (int i = 0; i < numAeropuertos; i++)
             {
                 Point ubicacion;
@@ -67,14 +86,15 @@ namespace Proyecto3Datos1_
                     int y = random.Next(0, tamaño);
                     ubicacion = new Point(x, y);
                 }
-                while (mapa[ubicacion.X, ubicacion.Y] != 1 ||
-                       aeropuertos.Contains(ubicacion) ||
-                       EstaADistancia(ubicacion, aeropuertos, distanciaMinima)); // Solo en tierra y sin repetir
+                // Verificar que el punto está en tierra, no repetido y cumple la distancia mínima con todos los puntos importantes
+                while (mapa[ubicacion.X, ubicacion.Y] != 1 || EstaADistancia(ubicacion, puntosImportantes, distanciaMinima));
 
                 aeropuertos.Add(ubicacion);
+                puntosImportantes.Add(ubicacion); // Agregar a la lista de puntos importantes
+                grafo.AgregarNodo(ubicacion);
             }
 
-            // Generar ubicaciones de portaviones (en mar)
+            // Generar ubicaciones de portaviones en el agua
             for (int i = 0; i < numPortaviones; i++)
             {
                 Point ubicacion;
@@ -84,16 +104,22 @@ namespace Proyecto3Datos1_
                     int y = random.Next(0, tamaño);
                     ubicacion = new Point(x, y);
                 }
-                while (mapa[ubicacion.X, ubicacion.Y] != 0 ||
-                       portaviones.Contains(ubicacion) ||
-                       EstaADistancia(ubicacion, portaviones, distanciaMinima) ||
-                       EstaADistancia(ubicacion, aeropuertos, distanciaMinima)); // Solo en mar y sin repetir
+                // Verificar que el punto está en agua, no repetido y cumple la distancia mínima con todos los puntos importantes
+                while (mapa[ubicacion.X, ubicacion.Y] != 0 || EstaADistancia(ubicacion, puntosImportantes, distanciaMinima));
 
                 portaviones.Add(ubicacion);
+                puntosImportantes.Add(ubicacion); // Agregar a la lista de puntos importantes
+                grafo.AgregarNodo(ubicacion);
+                
             }
+
+            string rutaArchivo = @"C:\adyacencia\ListaAdyacencia.txt"; // Puedes cambiar la ruta según necesites
+            grafo.GenerarConexiones(); // Genera conexiones entre nodos
+            grafo.MostrarGrafo(rutaArchivo);
+
         }
 
-        // Método para verificar si hay elementos adyacentes en una lista
+        // Función para verificar la distancia mínima entre un punto y todos los puntos en una lista
         private bool EstaADistancia(Point punto, List<Point> lista, int distanciaMinima)
         {
             foreach (Point p in lista)
