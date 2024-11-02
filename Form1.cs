@@ -113,9 +113,12 @@ namespace Proyecto3Datos1_
                 
             }
 
-            string rutaArchivo = @"C:\adyacencia\ListaAdyacencia.txt"; // Puedes cambiar la ruta según necesites
+            string rutaArchivo = @"C:\adyacencia\ListaAdyacencia.txt"; 
             grafo.GenerarConexiones(); // Genera conexiones entre nodos
             grafo.MostrarGrafo(rutaArchivo);
+            // Llama al método de validación
+            validacion(@"C:\adyacencia\ValidacionPuntosImportantes.txt");
+
 
         }
 
@@ -167,6 +170,28 @@ namespace Proyecto3Datos1_
             foreach (Point p in portaviones)
             {
                 paneles[p.X, p.Y].BackColor = Color.Black; // Color de portavión
+            }
+        }
+        public void validacion(string rutaArchivo)
+        {
+            // Crea o sobrescribe el archivo de texto
+            using (StreamWriter writer = new StreamWriter(rutaArchivo))
+            {
+                // Verificar aeropuertos
+                writer.WriteLine("Validación de Aeropuertos:");
+                foreach (var aeropuerto in aeropuertos)
+                {
+                    writer.WriteLine($"Aeropuerto: {aeropuerto} - " +
+                                     $"Ubicación en Matriz: {mapa[aeropuerto.X, aeropuerto.Y]}");
+                }
+
+                // Verificar portaviones
+                writer.WriteLine("Validación de Portaviones:");
+                foreach (var portavion in portaviones)
+                {
+                    writer.WriteLine($"Portavión: {portavion} - " +
+                                     $"Ubicación en Matriz: {mapa[portavion.X, portavion.Y]}");
+                }
             }
         }
 
