@@ -10,12 +10,15 @@ namespace Proyecto3Datos1_
     {
         private int[,] mapa;
         private int tamaño = 20; // Tamaño de la matriz
+        private Color[,] coloresOriginales;
         private List<Point> aeropuertos = new List<Point>();
         private List<Point> portaviones = new List<Point>();
         private Grafo grafo;
         private BateriaAntiaerea bateria;
         private Panel[,] paneles;
-
+        private DateTime tiempoInicioPresion;
+        private bool disparando = false;
+        
         public Form1()
         {
             InitializeComponent();
@@ -25,6 +28,8 @@ namespace Proyecto3Datos1_
             mapa = new int[tamaño, tamaño];
             grafo = new Grafo(distanciaMaxima);
             paneles = new Panel[tamaño, tamaño];
+            coloresOriginales = new Color[tamaño, tamaño];
+            
 
             this.ClientSize = new Size(1020, 620);
 
@@ -40,9 +45,10 @@ namespace Proyecto3Datos1_
 
             // Dibujar los elementos iniciales en la matriz
             DibujarMatriz();
+            
         }
-
-        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        
+        private void Form1_KeyDown(object? sender, KeyEventArgs e)
         {
             
             if (e.KeyCode == Keys.Left)
@@ -55,14 +61,35 @@ namespace Proyecto3Datos1_
                 bateria.MoverDerecha();
                 
             }
+            else if (e.KeyCode == Keys.Space && !disparando)
+            {
+                tiempoInicioPresion = DateTime.Now;
+                disparando = true;
+            }
         }
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+            base.OnKeyUp(e);
+
+            if (e.KeyCode == Keys.Space && disparando)
+            {
+                disparando = false;
+                TimeSpan duracionPresion = DateTime.Now - tiempoInicioPresion;
+
+                // Calcular la velocidad en función del tiempo de presión (por ejemplo, entre 50 ms y 200 ms)
+                int velocidadBala = Math.Max(50, 200 - (int)duracionPresion.TotalMilliseconds);
+
+                // Crear la bala en la posición de la batería y con la velocidad calculada
+                Bala nuevaBala = new Bala(paneles, coloresOriginales, bateria.x, bateria.y - 1, velocidadBala);
+            }
+        }
+
 
 
         private void InicializarPaneles()
         {
             int tamañoCelda = 30;
 
-            // Crear la matriz visual de paneles
             for (int i = 0; i < tamaño; i++)
             {
                 for (int j = 0; j < tamaño; j++)
@@ -75,6 +102,7 @@ namespace Proyecto3Datos1_
                     };
 
                     paneles[i, j] = panel;
+                    coloresOriginales[i, j] = panel.BackColor; // Guardar el color original
                     this.Controls.Add(panel);
                 }
             }
@@ -159,24 +187,33 @@ namespace Proyecto3Datos1_
 
         private void DibujarMatriz()
         {
-            // Colorear el mapa de agua y tierra
             for (int i = 0; i < tamaño-1; i++)
             {
                 for (int j = 0; j < tamaño; j++)
                 {
-                    paneles[i, j].BackColor = mapa[i, j] == 0 ? Color.Blue : Color.Green;
+                    if (mapa[i, j] == 0)
+                    {
+                        paneles[i, j].BackColor = Color.Blue;
+                        coloresOriginales[i, j] = Color.Blue; // Guardar color original
+                    }
+                    else
+                    {
+                        paneles[i, j].BackColor = Color.Green;
+                        coloresOriginales[i, j] = Color.Green; // Guardar color original
+                    }
                 }
             }
 
-            // Colorear aeropuertos y portaviones
             foreach (Point p in aeropuertos)
             {
                 paneles[p.X, p.Y].BackColor = Color.Gray;
+                coloresOriginales[p.X, p.Y] = Color.Gray; // Guardar color original
             }
 
             foreach (Point p in portaviones)
             {
                 paneles[p.X, p.Y].BackColor = Color.Black;
+                coloresOriginales[p.X, p.Y] = Color.Black; // Guardar color original
             }
         }
 

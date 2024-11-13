@@ -3,7 +3,7 @@ namespace Proyecto3Datos1_
     public class BateriaAntiaerea
     {
         private Panel[,] paneles;
-        private int x, y; // Posición actual de la batería en la matriz
+        public int x, y; // Posición actual de la batería en la matriz
 
         public BateriaAntiaerea(Panel[,] paneles, int xInicial, int yInicial)
         {

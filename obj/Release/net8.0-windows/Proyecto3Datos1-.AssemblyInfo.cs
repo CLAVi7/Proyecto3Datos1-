@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Proyecto3Datos1-")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d113f5223a3f841d50fb13980c574fb8e2efb535")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+435474e8c1b310668ff93ace8debfe4d6cc45531")]
 [assembly: System.Reflection.AssemblyProductAttribute("Proyecto3Datos1-")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Proyecto3Datos1-")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

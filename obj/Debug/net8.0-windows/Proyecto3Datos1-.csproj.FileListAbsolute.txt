@@ -13,3 +13,5 @@ C:\Users\pariv\OneDrive\Documentos\GitHub\Proyecto3Datos1-\obj\Debug\net8.0-wind
 C:\Users\pariv\OneDrive\Documentos\GitHub\Proyecto3Datos1-\obj\Debug\net8.0-windows\Proyecto3Datos1-.genruntimeconfig.cache
 C:\Users\pariv\OneDrive\Documentos\GitHub\Proyecto3Datos1-\obj\Debug\net8.0-windows\ref\Proyecto3Datos1-.dll
 C:\Users\pariv\OneDrive\Documentos\GitHub\Proyecto3Datos1-\obj\Debug\net8.0-windows\Proyecto3Datos1-.sourcelink.json
+C:\Users\pariv\OneDrive\Documentos\GitHub\Proyecto3Datos1-\obj\Debug\net8.0-windows\Proyecto3Datos1_.Form1.resources
+C:\Users\pariv\OneDrive\Documentos\GitHub\Proyecto3Datos1-\obj\Debug\net8.0-windows\Proyecto3Datos1-.csproj.GenerateResource.cache
